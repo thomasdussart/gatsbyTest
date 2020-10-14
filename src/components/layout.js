@@ -1,7 +1,7 @@
 import React from "react"
 import { css } from "@emotion/core"
 import { useStaticQuery, Link, graphql } from "gatsby"
-import { login, logout, isAuthenticated, getProfile } from "../utils/auth"
+import { logout } from "../utils/auth"
 import { rhythm } from "../utils/typography"
 
 export default function Layout({ children }) {

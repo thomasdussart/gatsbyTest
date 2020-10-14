@@ -1,11 +1,11 @@
-import React from "react"
+import React, { useState, useEffect } from "react"
 import { css } from "@emotion/core"
-import { Router } from "@reach/router"
-import { login, logout, isAuthenticated, getProfile } from "../utils/auth"
 import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
-import About from "./about"
-import Contact from "./contact"
+// import { Router } from "@reach/router"
+// import { login, logout, isAuthenticated, getProfile } from "../utils/auth"
+// import About from "./about"
+// import Contact from "./contact"
 
 export default function Home({ data }) {
   // if (!isAuthenticated()) {
@@ -13,8 +13,50 @@ export default function Home({ data }) {
   //   return <p>Redirecting to login...</p>
   // }
 
+  useEffect(() => {
+    let test = document.getElementById("search").value
+    console.log(test)
+  })
+
+  const [searchValue, setSearchValue] = useState("")
+  const [articlesOrder, setArticlesOrder] = useState("DESC")
+  const toggle = () => {
+    if (articlesOrder === "DESC") {
+      setArticlesOrder("ASC")
+    } else {
+      setArticlesOrder("DESC")
+    }
+  }
+
+  function handleSearchSubmit(e) {
+    e.preventDefault()
+    setSearchValue(document.getElementById("search").value)
+  }
+
+  //search on keypress
+  document.getElementById("search") &&
+    document.getElementById("search").addEventListener("keyup", function () {
+      console.log("keyup OK")
+      setSearchValue(document.getElementById("search").value)
+      console.log("setSearchValue OK")
+    })
+
   return (
     <Layout>
+      <span
+        css={css`
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 2rem;
+        `}
+      >
+        <button onClick={toggle}>Sort</button>
+        <form onSubmit={handleSearchSubmit}>
+          <input type="search" placeholder="recherche" id="search" />
+          <input type="submit" />
+        </form>
+      </span>
       <div>
         <h1
           css={css`
@@ -25,8 +67,25 @@ export default function Home({ data }) {
           Amazing Pandas Eating Things
         </h1>
         <h3>{data.allMarkdownRemark.totalCount} Posts</h3>
+
         {data.allMarkdownRemark.edges
-          .sort((a, b) => a - b)
+          .filter(search =>
+            search.node.frontmatter.title
+              .toUpperCase()
+              .includes(searchValue.toUpperCase())
+          )
+          .sort((elementA, elementB) => {
+            let dateA = new Date(elementA.node.frontmatter.date),
+              dateB = new Date(elementB.node.frontmatter.date)
+
+            if (dateA > dateB) {
+              return articlesOrder === "DESC" ? -1 : 1
+            } else if (dateA < dateB) {
+              return articlesOrder === "DESC" ? 1 : -1
+            } else {
+              return 0
+            }
+          })
           .map(({ node }) => (
             <div key={node.id}>
               <Link
