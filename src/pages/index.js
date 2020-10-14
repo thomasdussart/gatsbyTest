@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { css } from "@emotion/core"
 import { Link, graphql } from "gatsby"
 import Layout from "../components/layout"
@@ -12,11 +12,6 @@ export default function Home({ data }) {
   //   login()
   //   return <p>Redirecting to login...</p>
   // }
-
-  useEffect(() => {
-    let test = document.getElementById("search").value
-    console.log(test)
-  })
 
   const [searchValue, setSearchValue] = useState("")
   const [articlesOrder, setArticlesOrder] = useState("DESC")
@@ -34,12 +29,11 @@ export default function Home({ data }) {
   }
 
   //search on keypress
-  document.getElementById("search") &&
-    document.getElementById("search").addEventListener("keyup", function () {
-      console.log("keyup OK")
-      setSearchValue(document.getElementById("search").value)
-      console.log("setSearchValue OK")
-    })
+  function handleSearchChange(e) {
+    document
+      .getElementById("search")
+      .addEventListener("keyup", handleSearchSubmit(e))
+  }
 
   return (
     <Layout>
@@ -53,7 +47,12 @@ export default function Home({ data }) {
       >
         <button onClick={toggle}>Sort</button>
         <form onSubmit={handleSearchSubmit}>
-          <input type="search" placeholder="recherche" id="search" />
+          <input
+            type="search"
+            placeholder="recherche"
+            id="search"
+            onChange={handleSearchChange}
+          />
           <input type="submit" />
         </form>
       </span>
